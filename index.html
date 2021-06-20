@@ -2,7 +2,11 @@
 <button type="button" onclick="onButtonClick()">requestPermission</button>
 <h3>Output</h3>
 <div id="output" class="output">
-  <div id="content"></div>
+  <div id="content">
+    <span id="x">0</span>
+    <span id="y">0</span>
+    <span id="z">0</span>
+  </div>
   <div id="status"></div>
   <pre id="log"></pre>
 </div>
@@ -10,12 +14,15 @@
 <script>
 
 function log(line) {
-    document.querySelector('#log').textContent += line + '\n';
-    console.log(line);
+  document.querySelector('#log').textContent += line + '\n';
+  console.log(line);
 }
 
 async function onDeviceMotion(event) {
-  log(event);
+  document.getElementById('x').innerHTML = event.accelerationIncludingGravity.x;
+  document.getElementById('y').innerHTML = event.accelerationIncludingGravity.y;
+  document.getElementById('z').innerHTML = event.accelerationIncludingGravity.z;
+  console.log(event);
 }
 
 async function onButtonClick() {
