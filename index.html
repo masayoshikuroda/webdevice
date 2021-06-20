@@ -2,27 +2,28 @@
 <button type="button" onclick="onButtonClick()">requestPermission</button>
 <h3>Output</h3>
 <div id="output" class="output">
-  <div id="windowOrientation">
-    Orientation: <span id="orientation"></span><br/>
+  <div id="window">
+    Orientation: <span class="orientation"></span><br/>
   </div>
-  <div id="eventInformation">
-    Interval:  <span id="interval">0</span><br/>
-    Timestamp: <span id="timeStamp"></span><br/>
-  </div>
-  <div id="acceleration">
-    X: <span id="ax">0</span><br/>
-    Y: <span id="ay">0</span><br/>
-    Z: <span id="az">0</span><br/>
-    <br/>
-    X: <span id="aigx">0</span><br/>
-    Y: <span id="aigy">0</span><br/>
-    Z: <span id="aigz">0</span><br/>
+  <div id="devicemotion">
+    Interval:  <span class="interval">0</span><br/>
+    Timestamp: <span class="timeStamp"></span><br/>
+    <div id="acceleration">
+      X: <span class="x">0</span><br/>
+      Y: <span class="y">0</span><br/>
+      Z: <span class="z">0</span><br/>
+    </div>
+    <div id="accelerationIncludingGravity">
+      X: <span class="gx">0</span><br/>
+      Y: <span class="gy">0</span><br/>
+      Z: <span class="gz">0</span><br/>
   </div>
   <div id="deviceorientation">
-    ABSOLUTE: <span id="absolute"></span>
-    ALPHA: <span id="a">0</span><br/>
-    BETA:  <span id="b">0</span><br/>
-    GAMMA: <span id="g">0</span><br/>
+    Absolute:  <span class="absolute"></span>
+    Timestamp: <span class="timeStamp"></span><br/>
+    ALPHA: <span class="alpha">0</span><br/>
+    BETA:  <span class="beta">0</span><br/>
+    GAMMA: <span class="gamma">0</span><br/>
   </div>
   <div id="status"></div>
   <pre id="log"></pre>
@@ -36,29 +37,29 @@ function log(line) {
 }
 
 async function onDeviceMotion(event) {
-  document.getElementById('interval').textContent  = event.interval;
-  document.getElementById('timeStamp').textContent = event.timeStamp;
+  document.querySelector('#devicemotion > .interval').textContent  = event.interval;
+  document.querySelector('#devicemotion > .timeStamp').textContent = event.timeStamp;
 
-  document.getElementById('ax').textContent = event.acceleration.x;
-  document.getElementById('ay').textContent = event.acceleration.y;
-  document.getElementById('az').textContent = event.acceleration.z;
+  document.querySelector('#devicemotion > #acceleration > .x').textContent = event.acceleration.x;
+  document.querySelector('#devicemotion > #acceleration > .y').textContent = event.acceleration.y;
+  document.querySelector('#devicemotion > #acceleration > .z').textContent = event.acceleration.z;
 
-  document.getElementById('aigx').textContent = event.accelerationIncludingGravity.x;
-  document.getElementById('aigy').textContent = event.accelerationIncludingGravity.y;
-  document.getElementById('aigz').textContent = event.accelerationIncludingGravity.z;
+  document.querySelector('#devicemotion > #accelerationIncludingGravity > .x').textContent = event.accelerationIncludingGravity.x;
+  document.querySelector('#devicemotion > #accelerationIncludingGravity > .y').textContent = event.accelerationIncludingGravity.y;
+  document.querySelector('#devicemotion > #accelerationIncludingGravity > .z').textContent = event.accelerationIncludingGravity.z;
 
-  document.getElementById('orientation').textContent = window.orientation;
+  document.querySelector('#window > .orientation').textContent = window.orientation;
 
   console.log(event);
 }
 
 async function onDeviceOrientation(event) {
-  document.getElementById('absolute').textContent  = event.absolute;
-  document.getElementById('timeStamp').textContent = event.timeStamp;
+  document.querySelector('#deviceorientation > .absolute').textContent  = event.absolute;
+  document.querySelector('#deviceorientation > .timeStamp').textContent = event.timeStamp;
 
-  document.getElementById('a').textContent = event.alpha;
-  document.getElementById('b').textContent = event.beta;
-  document.getElementById('g').textContent = event.gamma;
+  document.querySelector('#deviceorientation > .alpha').textContent = event.alpha;
+  document.querySelector('#deviceorientation > .beta').textContent  = event.beta;
+  document.querySelector('#deviceorientation > .gamma').textContent = event.gamma;
 }
 
 async function onButtonClick() {
