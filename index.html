@@ -2,17 +2,27 @@
 <button type="button" onclick="onButtonClick()">requestPermission</button>
 <h3>Output</h3>
 <div id="output" class="output">
+  <div id="windowOrientation">
+    Orientation: <span id="orientation"></span><br/>
+  </div>
   <div id="eventInformation">
     Interval:  <span id="interval">0</span><br/>
     Timestamp: <span id="timeStamp"></span><br/>
   </div>
-  <div id="accelerationIncludingGravity">
-    X: <span id="x">0</span><br/>
-    Y: <span id="y">0</span><br/>
-    Z: <span id="z">0</span><br/>
+  <div id="acceleration">
+    X: <span id="ax">0</span><br/>
+    Y: <span id="ay">0</span><br/>
+    Z: <span id="az">0</span><br/>
+    <br/>
+    X: <span id="aigx">0</span><br/>
+    Y: <span id="aigy">0</span><br/>
+    Z: <span id="aigz">0</span><br/>
   </div>
-  <div id="">
-    
+  <div id="deviceorientation">
+    ABSOLUTE: <span id="absolute"></span>
+    ALPHA: <span id="a">0</span><br/>
+    BETA:  <span id="b">0</span><br/>
+    GAMMA: <span id="g">0</span><br/>
   </div>
   <div id="status"></div>
   <pre id="log"></pre>
@@ -29,10 +39,26 @@ async function onDeviceMotion(event) {
   document.getElementById('interval').textContent  = event.interval;
   document.getElementById('timeStamp').textContent = event.timeStamp;
 
-  document.getElementById('x').textContent = event.accelerationIncludingGravity.x;
-  document.getElementById('y').textContent = event.accelerationIncludingGravity.y;
-  document.getElementById('z').textContent = event.accelerationIncludingGravity.z;
+  document.getElementById('ax').textContent = event.acceleration.x;
+  document.getElementById('ay').textContent = event.acceleration.y;
+  document.getElementById('az').textContent = event.acceleration.z;
+
+  document.getElementById('aigx').textContent = event.accelerationIncludingGravity.x;
+  document.getElementById('aigy').textContent = event.accelerationIncludingGravity.y;
+  document.getElementById('aigz').textContent = event.accelerationIncludingGravity.z;
+
+  document.getElementById('orientation').textContent = window.orientation;
+
   console.log(event);
+}
+
+async function onDeviceOrientation(event) {
+  document.getElementById('absolute').textContent  = event.absolute;
+  document.getElementById('timeStamp').textContent = event.timeStamp;
+
+  document.getElementById('a').textContent = event.alpha;
+  document.getElementById('b').textContent = event.beta;
+  document.getElementById('g').textContent = event.gamma;
 }
 
 async function onButtonClick() {
@@ -40,7 +66,8 @@ async function onButtonClick() {
     if (DeviceMotionEvent.requestPermission) {
       const state = await DeviceMotionEvent.requestPermission();
       if (state === 'granted') {
-        window.addEventListener("devicemotion", onDeviceMotion);
+        // window.addEventListener("devicemotion", onDeviceMotion);
+        window.addEventListener("deviceorientation", onDeviceOrientation);
       } else {
         alert('not permitted!');
       }
