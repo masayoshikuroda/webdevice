@@ -2,10 +2,17 @@
 <button type="button" onclick="onButtonClick()">requestPermission</button>
 <h3>Output</h3>
 <div id="output" class="output">
-  <div id="content">
+  <div id="eventInformation">
+    Interval:  <span id="interval">0</span><br/>
+    Timestamp: <span id="timeStamp"></span><br/>
+  </div>
+  <div id="accelerationIncludingGravity">
     X: <span id="x">0</span><br/>
     Y: <span id="y">0</span><br/>
     Z: <span id="z">0</span><br/>
+  </div>
+  <div id="">
+    
   </div>
   <div id="status"></div>
   <pre id="log"></pre>
@@ -19,9 +26,12 @@ function log(line) {
 }
 
 async function onDeviceMotion(event) {
-  document.getElementById('x').innerHTML = event.accelerationIncludingGravity.x;
-  document.getElementById('y').innerHTML = event.accelerationIncludingGravity.y;
-  document.getElementById('z').innerHTML = event.accelerationIncludingGravity.z;
+  document.getElementById('interval').textContent  = event.interval;
+  document.getElementById('timeStamp').textContent = event.timeStamp;
+
+  document.getElementById('x').textContent = event.accelerationIncludingGravity.x;
+  document.getElementById('y').textContent = event.accelerationIncludingGravity.y;
+  document.getElementById('z').textContent = event.accelerationIncludingGravity.z;
   console.log(event);
 }
 
