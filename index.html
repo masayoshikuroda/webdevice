@@ -1,0 +1,37 @@
+<h1>Device Web API Test</h1>
+<button type="button" onclick="onButtonClick()">requestPermission</button>
+<h3>Output</h3>
+<div id="output" class="output">
+  <div id="content"></div>
+  <div id="status"></div>
+  <pre id="log"></pre>
+</div>
+
+<script>
+
+function log(line) {
+    document.querySelector('#log').textContent += line + '\n';
+    console.log(line);
+}
+
+async function onDeviceMotion(event) {
+  log(event);
+}
+
+async function onButtonClick() {
+  try {
+    if (DeviceMotionEvent.requestPermission) {
+      const state = await DeviceMotionEvent.requestPermission();
+      if (state === 'granted') {
+        window.addEventListener("devicemotion", onDeviceMotion);
+      } else {
+        alert('not permitted!');
+      }
+    } 
+  } catch (error) {
+    log('Argh! ' + error);
+    log(error.stack);
+  }
+}
+
+</script>
