@@ -14,16 +14,22 @@
       Z: <span class="z">0</span><br/>
     </div>
     <div id="accelerationIncludingGravity">
-      X: <span class="gx">0</span><br/>
-      Y: <span class="gy">0</span><br/>
-      Z: <span class="gz">0</span><br/>
+      X: <span class="x">0</span><br/>
+      Y: <span class="y">0</span><br/>
+      Z: <span class="z">0</span><br/>
+    </div>
   </div>
   <div id="deviceorientation">
-    Absolute:  <span class="absolute"></span>
+    Absolute:  <span class="absolute"></span><br/>
     Timestamp: <span class="timeStamp"></span><br/>
-    ALPHA: <span class="alpha">0</span><br/>
-    BETA:  <span class="beta">0</span><br/>
-    GAMMA: <span class="gamma">0</span><br/>
+    <div id="rotationRate">
+      ALPHA: <span class="alpha">0</span><br/>
+      BETA:  <span class="beta">0</span><br/>
+      GAMMA: <span class="gamma">0</span><br/>
+    </div>
+  </div>
+  <div id="compassneedcalibration">
+    Need Calibration: <span class="need"></span>
   </div>
   <div id="status"></div>
   <pre id="log"></pre>
@@ -40,13 +46,13 @@ async function onDeviceMotion(event) {
   document.querySelector('#devicemotion > .interval').textContent  = event.interval;
   document.querySelector('#devicemotion > .timeStamp').textContent = event.timeStamp;
 
-  document.querySelector('#devicemotion > #acceleration > .x').textContent = event.acceleration.x;
-  document.querySelector('#devicemotion > #acceleration > .y').textContent = event.acceleration.y;
-  document.querySelector('#devicemotion > #acceleration > .z').textContent = event.acceleration.z;
+  document.querySelector('#acceleration > .x').textContent = event.acceleration.x;
+  document.querySelector('#acceleration > .y').textContent = event.acceleration.y;
+  document.querySelector('#acceleration > .z').textContent = event.acceleration.z;
 
-  document.querySelector('#devicemotion > #accelerationIncludingGravity > .x').textContent = event.accelerationIncludingGravity.x;
-  document.querySelector('#devicemotion > #accelerationIncludingGravity > .y').textContent = event.accelerationIncludingGravity.y;
-  document.querySelector('#devicemotion > #accelerationIncludingGravity > .z').textContent = event.accelerationIncludingGravity.z;
+  document.querySelector('#accelerationIncludingGravity > .x').textContent = event.accelerationIncludingGravity.x;
+  document.querySelector('#accelerationIncludingGravity > .y').textContent = event.accelerationIncludingGravity.y;
+  document.querySelector('#accelerationIncludingGravity > .z').textContent = event.accelerationIncludingGravity.z;
 
   document.querySelector('#window > .orientation').textContent = window.orientation;
 
@@ -57,9 +63,13 @@ async function onDeviceOrientation(event) {
   document.querySelector('#deviceorientation > .absolute').textContent  = event.absolute;
   document.querySelector('#deviceorientation > .timeStamp').textContent = event.timeStamp;
 
-  document.querySelector('#deviceorientation > .alpha').textContent = event.alpha;
-  document.querySelector('#deviceorientation > .beta').textContent  = event.beta;
-  document.querySelector('#deviceorientation > .gamma').textContent = event.gamma;
+  document.querySelector('#rotationRate > .alpha').textContent = event.alpha;
+  document.querySelector('#rotationRate > .beta').textContent  = event.beta;
+  document.querySelector('#rotationRate > .gamma').textContent = event.gamma;
+}
+
+async function onCompassNeedCalibration(event) {
+  document querySelector('#compassneedcalibration > need).textContent = 'true';
 }
 
 async function onButtonClick() {
@@ -67,8 +77,9 @@ async function onButtonClick() {
     if (DeviceMotionEvent.requestPermission) {
       const state = await DeviceMotionEvent.requestPermission();
       if (state === 'granted') {
-        // window.addEventListener("devicemotion", onDeviceMotion);
+        window.addEventListener("devicemotion", onDeviceMotion);
         window.addEventListener("deviceorientation", onDeviceOrientation);
+        window.addEventListener("compassneedscalibration", onCompassNeedCalibration);
       } else {
         alert('not permitted!');
       }
