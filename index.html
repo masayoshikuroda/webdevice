@@ -48,8 +48,8 @@ function log(line) {
 }
 
 async function onDeviceMotion(event) {
-  document.querySelector('#devicemotion > .interval').value  = event.interval;
-  document.querySelector('#devicemotion > .timeStamp').value = event.timeStamp;
+  document.querySelector('#devicemotion > label > .interval' ).value  = event.interval;
+  document.querySelector('#devicemotion > label > .timeStamp').value = event.timeStamp;
 
   document.querySelector('#acceleration > .x').value = event.acceleration.x;
   document.querySelector('#acceleration > .y').value = event.acceleration.y;
