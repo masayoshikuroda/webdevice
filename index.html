@@ -2,39 +2,90 @@
 <button type="button" onclick="onButtonClick()">requestPermission</button>
 <h3>Output</h3>
 <div id="output" class="output">
+  <h2>window</h2>
   <div id="window">
-    <label>Orientation:<input type="text" class="orientation"/></label><br/>
+    <label>Orientation:</label>
+    <input type="text" class="orientation"/>
   </div>
   <h2>device motion</h2>
   <div id="devicemotion">
-    <label>Interval:</label><input type="number" class="interval" value="0.000" style="text-align:right"/><br/>
-    <label>Timestamp:</label><input type="number" class="timeStamp" value="0" style="text-align:right"/><br/>
+    <table>
+      <tr>
+        <td>Interval:</td>
+        <td><input type="number" class="interval" value="0.000" style="text-align:right"/></td>
+      </tr>
+      <tr>
+        <td>Timestamp:</td>
+        <td><input type="number" class="timeStamp" value="0" style="text-align:right"/></td>
+      </tr>
+    </table>
     <h3>acceleration</h3>
     <div id="acceleration">
-      <label>X:</label><input type="number" class="x" value="0.000" style="text-align:right"/><br/>
-      <label>Y:</label><input type="number" class="y" value="0.000" style="text-align:right"/><br/>
-      <label>Z:</label><input type="number" class="z" value="0.000" style="text-align:right"/><br/>
+      <table>
+        <tr>
+          <td>X:</td>
+          <td><input type="number" class="ax" value="0.000" style="text-align:right"/></td>
+        </tr>
+        <tr>
+          <td>Y:</td>
+          <td><input type="number" class="ay" value="0.000" style="text-align:right"/></td>
+        </tr>
+        <tr>
+          <td>Z:</td>
+          <td><input type="number" class="az" value="0.000" style="text-align:right"/></td>
+        </table>
     </div>
     <h3>acceleration including gravity</h3>
     <div id="accelerationIncludingGravity">
-      <label>X:</label><input type="number" class="x" value="0.000" style="text-align:right"/><br/>
-      <label>Y:</label><input type="number" class="y" value="0.000" style="text-align:right"/><br/>
-      <label>Z:</label><input type="number" class="z" value="0.000" style="text-align:right"/><br/>
-  </div>
+      <table>
+        <tr>
+          <td>X:</td>
+          <td><input type="number" id="aigx" value="0.000" style="text-align:right"/></td>
+        </tr>
+        <tr>
+          <td>Y:</td>
+          <td><input type="number" id="aigy" value="0.000" style="text-align:right"/></td>
+        </tr>
+        <tr>
+          <td>Z:</td>
+          <td><input type="number" id="aigz" value="0.000" style="text-align:right"/></td>
+        </tr>
+      </table>
+    </div>
   </div>
   <h2>device orienation</h2>
   <div id="deviceorientation">
-    <label>Absolute:</label><input type="text" class="absolute" /><br/>
-    <label>Timestamp:</label><input type="number" class="timeStamp" value="0" style="text-align:right"/><br/>
+    <table>
+      <tr>
+        <td>Absolute:</td>
+        <td><input type="text" class="absolute" /></td>
+      </tr>
+      <tr>
+        <td>Timestamp:</td>
+        <td><input type="number" class="timeStamp" value="0" style="text-align:right"/></td>
+      </tr>
+    </table>
     <h3>rotation rate</h3>
     <div id="rotationRate">
-      <label>ALPHA:</label><input type="number" class="alpha" value="0.000" style="text-align:right"/><br/>
-      <label>BETA:</label> <input type="number" class="beta"  value="0.000" style="text-align:right"/><br/>
-      <label>GAMMA:</label><input type="number" class="gamma" value="0.000" style="text-align:right"/><br/>
+      <table>
+        <tr>
+          <td>ALPHA:</td>
+          <td><input type="number" id="alpha" value="0.000" style="text-align:right"/></td>
+        <tr>
+          <td>BETA:</td>
+          <td><input type="number" id="beta"  value="0.000" style="text-align:right"/></td>
+        </tr>
+        <tr>
+          <td>GAMMA:</td>
+          <td><input type="number" id="gamma" value="0.000" style="text-align:right"/></td>
+        </tr>
+      </table>
     </div>
   </div>
+  <h2>compass need calibration</h2>
   <div id="compassneedcalibration">
-    <label>Need Calibration:</label><input type="text" class="need"/><br/>
+    <label>Need Calibration:</label>
+    <input type="text" class="need"/><br/>
   </div>
   <div id="status"></div>
   <pre id="log"></pre>
@@ -51,13 +102,13 @@ async function onDeviceMotion(event) {
   document.querySelector('#devicemotion > .interval' ).value  = event.interval.toFixed(6);
   document.querySelector('#devicemotion > .timeStamp').value = event.timeStamp.toFixed(3);
 
-  document.querySelector('#acceleration > .x').value = event.acceleration.x.toFixed(3);
-  document.querySelector('#acceleration > .y').value = event.acceleration.y.toFixed(3);
-  document.querySelector('#acceleration > .z').value = event.acceleration.z.toFixed(3);
+  document.querySelector('#ax').value = event.acceleration.x.toFixed(3);
+  document.querySelector('#ay').value = event.acceleration.y.toFixed(3);
+  document.querySelector('#az').value = event.acceleration.z.toFixed(3);
 
-  document.querySelector('#accelerationIncludingGravity > .x').value = event.accelerationIncludingGravity.x.toFixed(3);
-  document.querySelector('#accelerationIncludingGravity > .y').value = event.accelerationIncludingGravity.y.toFixed(3);
-  document.querySelector('#accelerationIncludingGravity > .z').value = event.accelerationIncludingGravity.z.toFixed(3);
+  document.querySelector('#aigx').value = event.accelerationIncludingGravity.x.toFixed(3);
+  document.querySelector('#aigy').value = event.accelerationIncludingGravity.y.toFixed(3);
+  document.querySelector('#aigz').value = event.accelerationIncludingGravity.z.toFixed(3);
 
   document.querySelector('#window > .orientation').value = window.orientation;
 
@@ -68,9 +119,9 @@ async function onDeviceOrientation(event) {
   document.querySelector('#deviceorientation > .absolute' ).value = event.absolute;
   document.querySelector('#deviceorientation > .timeStamp').value = event.timeStampi.toFixed(3);
 
-  document.querySelector('#rotationRate > .alpha').value = event.alpha.toFixed(3);
-  document.querySelector('#rotationRate > .beta' ).value = event.beta.toFixed(3);
-  document.querySelector('#rotationRate > .gamma').value = event.gamma.toFixed(3);
+  document.querySelector('#alpha').value = event.alpha.toFixed(3);
+  document.querySelector('#beta' ).value = event.beta.toFixed(3);
+  document.querySelector('#gamma').value = event.gamma.toFixed(3);
 }
 
 async function onCompassNeedCalibration(event) {
