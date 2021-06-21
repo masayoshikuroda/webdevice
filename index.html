@@ -7,30 +7,30 @@
   </div>
   <h2>device motion</h2>
   <div id="devicemotion">
-    <label>Interval:</label><input type="number" class="interval"/><br/>
-    <label>Timestamp:</label><input type="number" class="timeStamp"/><br/>
+    <label>Interval:</label><input type="number" class="interval" value="0.000" style="text-align:right"/><br/>
+    <label>Timestamp:</label><input type="number" class="timeStamp" value="0" style="text-align:right"/><br/>
     <h3>acceleration</h3>
     <div id="acceleration">
-      <label>X:</label><input type="number" class="x" style="text-align:right"/><br/>
-      <label>Y:</label><input type="number" class="y" style="text-align:right"/><br/>
-      <label>Z:</label><input type="number" class="z" style="text-align:right"/><br/>
+      <label>X:</label><input type="number" class="x" value="0.000" style="text-align:right"/><br/>
+      <label>Y:</label><input type="number" class="y" value="0.000" style="text-align:right"/><br/>
+      <label>Z:</label><input type="number" class="z" value="0.000" style="text-align:right"/><br/>
     </div>
     <h3>acceleration including gravity</h3>
     <div id="accelerationIncludingGravity">
-      <label>X:</label><input type="number" class="x"/><br/>
-      <label>Y:</label><input type="number" class="y"/><br/>
-      <label>Z:</label><input type="number" class="z"/><br/>
+      <label>X:</label><input type="number" class="x" value="0.000" style="text-align:right"/><br/>
+      <label>Y:</label><input type="number" class="y" value="0.000" style="text-align:right"/><br/>
+      <label>Z:</label><input type="number" class="z" value="0.000" style="text-align:right"/><br/>
   </div>
   </div>
   <h2>device orienation</h2>
   <div id="deviceorientation">
     <label>Absolute:</label><input type="text" class="absolute" /><br/>
-    <label>Timestamp:</label><input type="number" class="timeStamp"/><br/>
+    <label>Timestamp:</label><input type="number" class="timeStamp" value="0" style="text-align:right"/><br/>
     <h3>rotation rate</h3>
     <div id="rotationRate">
-      <label>ALPHA:</label><input type="number" class="alpha"/><br/>
-      <label>BETA:</label><input type="number" class="beta"/><br/>
-      <label>GAMMA:</label><input type="number" class="gamma"/><br/>
+      <label>ALPHA:</label><input type="number" class="alpha" value="0.000" style="text-align:right"/><br/>
+      <label>BETA:</label> <input type="number" class="beta"  value="0.000" style="text-align:right"/><br/>
+      <label>GAMMA:</label><input type="number" class="gamma" value="0.000" style="text-align:right"/><br/>
     </div>
   </div>
   <div id="compassneedcalibration">
@@ -65,11 +65,11 @@ async function onDeviceMotion(event) {
 }
 
 async function onDeviceOrientation(event) {
-  document.querySelector('#deviceorientation > .absolute' ).value  = event.absolute;
+  document.querySelector('#deviceorientation > .absolute' ).value = event.absolute;
   document.querySelector('#deviceorientation > .timeStamp').value = event.timeStampi.toFixed(3);
 
   document.querySelector('#rotationRate > .alpha').value = event.alpha.toFixed(3);
-  document.querySelector('#rotationRate > .beta' ).value  = event.beta.toFixed(3);
+  document.querySelector('#rotationRate > .beta' ).value = event.beta.toFixed(3);
   document.querySelector('#rotationRate > .gamma').value = event.gamma.toFixed(3);
 }
 
