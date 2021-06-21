@@ -34,7 +34,7 @@
     </div>
   </div>
   <div id="compassneedcalibration">
-    <label>Need Calibration: <label type="text" class="need"/></label><br/>
+    <label>Need Calibration: <input type="text" class="need"/></label><br/>
   </div>
   <div id="status"></div>
   <pre id="log"></pre>
@@ -48,33 +48,33 @@ function log(line) {
 }
 
 async function onDeviceMotion(event) {
-  document.querySelector('#devicemotion > .interval').textContent  = event.interval;
-  document.querySelector('#devicemotion > .timeStamp').textContent = event.timeStamp;
+  document.querySelector('#devicemotion > .interval').value  = event.interval;
+  document.querySelector('#devicemotion > .timeStamp').value = event.timeStamp;
 
-  document.querySelector('#acceleration > .x').textContent = event.acceleration.x;
-  document.querySelector('#acceleration > .y').textContent = event.acceleration.y;
-  document.querySelector('#acceleration > .z').textContent = event.acceleration.z;
+  document.querySelector('#acceleration > .x').value = event.acceleration.x;
+  document.querySelector('#acceleration > .y').value = event.acceleration.y;
+  document.querySelector('#acceleration > .z').value = event.acceleration.z;
 
-  document.querySelector('#accelerationIncludingGravity > .x').textContent = event.accelerationIncludingGravity.x;
-  document.querySelector('#accelerationIncludingGravity > .y').textContent = event.accelerationIncludingGravity.y;
-  document.querySelector('#accelerationIncludingGravity > .z').textContent = event.accelerationIncludingGravity.z;
+  document.querySelector('#accelerationIncludingGravity > .x').value = event.accelerationIncludingGravity.x;
+  document.querySelector('#accelerationIncludingGravity > .y').value = event.accelerationIncludingGravity.y;
+  document.querySelector('#accelerationIncludingGravity > .z').value = event.accelerationIncludingGravity.z;
 
-  document.querySelector('#window > .orientation').textContent = window.orientation;
+  document.querySelector('#window > .orientation').value = window.orientation;
 
   console.log(event);
 }
 
 async function onDeviceOrientation(event) {
-  document.querySelector('#deviceorientation > .absolute').textContent  = event.absolute;
-  document.querySelector('#deviceorientation > .timeStamp').textContent = event.timeStamp;
+  document.querySelector('#deviceorientation > .absolute' ).value  = event.absolute;
+  document.querySelector('#deviceorientation > .timeStamp').value = event.timeStamp;
 
-  document.querySelector('#rotationRate > .alpha').textContent = event.alpha;
-  document.querySelector('#rotationRate > .beta').textContent  = event.beta;
-  document.querySelector('#rotationRate > .gamma').textContent = event.gamma;
+  document.querySelector('#rotationRate > .alpha').value = event.alpha;
+  document.querySelector('#rotationRate > .beta' ).value  = event.beta;
+  document.querySelector('#rotationRate > .gamma').value = event.gamma;
 }
 
 async function onCompassNeedCalibration(event) {
-  document.querySelector('#compassneedcalibration > need').textContent = 'true';
+  document.querySelector('#compassneedcalibration > need').value = 'true';
 }
 
 async function onButtonClick() {
