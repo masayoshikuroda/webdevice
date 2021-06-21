@@ -7,34 +7,34 @@
   </div>
   <h2>device motion</h2>
   <div id="devicemotion">
-    <label>Interval:  <input type="text" class="interval" ></input></label><br/>
-    <label>Timestamp: <input type="text" class="timeStamp"></input></label><br/>
+    <label>Interval:</label><input type="text" class="interval"/><br/>
+    <label>Timestamp:</label><input type="text" class="timeStamp"/><br/>
     <h3>acceleration</h3>
     <div id="acceleration">
-      <label>X:<input type="text" class="x"/></label><br/>
-      <label>Y:<input type="text" class="y"/></label><br/>
-      <label>Z:<input type="text" class="z"/></label><br/>
+      <label>X:</label><input type="text" class="x"/><br/>
+      <label>Y:</label><input type="text" class="y"/><br/>
+      <label>Z:</label><input type="text" class="z"/><br/>
     </div>
     <h3>acceleration including gravity</h3>
     <div id="accelerationIncludingGravity">
-      <label>X:<input type="text" class="x"/></label><br/>
-      <label>Y:<input type="text" class="y"/></label><br/>
-      <label>Z:<input type="text" class="z"/></label><br/>
+      <label>X:</label><input type="text" class="x"/><br/>
+      <label>Y:</label><input type="text" class="y"/><br/>
+      <label>Z:</label><input type="text" class="z"/><br/>
   </div>
   </div>
   <h2>device orienation</h2>
   <div id="deviceorientation">
-    <label>Absolute: <input type="text" class="absolute" /></label><br/>
-    <label>Timestamp:<input type="text" class="timeStamp"/></label><br/>
+    <label>Absolute:<label><input type="text" class="absolute" /><br/>
+    <label>Timestamp:</label><input type="text" class="timeStamp"/><br/>
     <h3>rotation rate</h3>
     <div id="rotationRate">
-      <label>ALPHA: <input type="text" class="alpha"/></label><br/>
-      <label>BETA:  <input type="text" class="beta" /></label><br/>
-      <label>GAMMA: <input type="text" class="gamma"/></label><br/>
+      <label>ALPHA:</label><input type="text" class="alpha"/><br/>
+      <label>BETA:</label><input type="text" class="beta"/><br/>
+      <label>GAMMA:</label><input type="text" class="gamma"/><br/>
     </div>
   </div>
   <div id="compassneedcalibration">
-    <label>Need Calibration: <input type="text" class="need"/></label><br/>
+    <label>Need Calibration:</label><input type="text" class="need"/><br/>
   </div>
   <div id="status"></div>
   <pre id="log"></pre>
@@ -48,8 +48,8 @@ function log(line) {
 }
 
 async function onDeviceMotion(event) {
-  document.querySelector('#devicemotion > label > .interval' ).value  = event.interval;
-  document.querySelector('#devicemotion > label > .timeStamp').value = event.timeStamp;
+  document.querySelector('#devicemotion > .interval' ).value  = event.interval;
+  document.querySelector('#devicemotion > .timeStamp').value = event.timeStamp;
 
   document.querySelector('#acceleration > .x').value = event.acceleration.x;
   document.querySelector('#acceleration > .y').value = event.acceleration.y;
