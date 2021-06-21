@@ -3,39 +3,38 @@
 <h3>Output</h3>
 <div id="output" class="output">
   <div id="window">
-    Orientation: <span class="orientation"></span><br/>
+    <label>Orientation:<input type="text" class="orientation"/></label><br/>
   </div>
   <h2>device motion</h2>
   <div id="devicemotion">
-    Interval:  <span class="interval">0</span><br/>
-    Timestamp: <span class="timeStamp"></span><br/>
+    <label>Interval:  <input type="text" class="interval" /></label><br/>
+    <label>Timestamp: <input type="text" class="timeStamp"/></label><br/>
     <h3>acceleration</h3>
     <div id="acceleration">
-      <label>acceleration</label>
-      X: <span class="x">0</span><br/>
-      Y: <span class="y">0</span><br/>
-      Z: <span class="z">0</span><br/>
+      <label>X:<input type="text" class="x"/></label><br/>
+      <label>Y:<input type="text" class="y"/></label><br/>
+      <label>Z:<input type="text" class="z"/></label><br/>
     </div>
     <h3>acceleration including gravity</h3>
     <div id="accelerationIncludingGravity">
-      X: <span class="x">0</span><br/>
-      Y: <span class="y">0</span><br/>
-      Z: <span class="z">0</span><br/>
-    </div>
+      <label>X:<input type="text" class="x"/></label><br/>
+      <label>Y:<input type="text" class="y"/></label><br/>
+      <label>Z:<input type="text" class="z"/></label><br/>
+  </div>
   </div>
   <h2>device orienation</h2>
   <div id="deviceorientation">
-    Absolute:  <span class="absolute"></span><br/>
-    Timestamp: <span class="timeStamp"></span><br/>
+    <label>Absolute: <input type="text" class="absolute" /></label><br/>
+    <label>Timestamp:<input type="text" class="timeStamp"/></label><br/>
     <h3>rotation rate</h3>
     <div id="rotationRate">
-      ALPHA: <span class="alpha">0</span><br/>
-      BETA:  <span class="beta">0</span><br/>
-      GAMMA: <span class="gamma">0</span><br/>
+      <label>ALPHA: <input type="text" class="alpha"/></label><br/>
+      <label>BETA:  <input type="text" class="beta" /></label><br/>
+      <label>GAMMA: <input type="text" class="gamma"/></label><br/>
     </div>
   </div>
   <div id="compassneedcalibration">
-    Need Calibration: <span class="need"></span>
+    <label>Need Calibration: <label type="text" class="need"/></label><br/>
   </div>
   <div id="status"></div>
   <pre id="log"></pre>
