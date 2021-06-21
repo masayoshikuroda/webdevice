@@ -7,8 +7,8 @@
   </div>
   <h2>device motion</h2>
   <div id="devicemotion">
-    <label>Interval:</label><input type="text" class="interval"/><br/>
-    <label>Timestamp:</label><input type="text" class="timeStamp"/><br/>
+    <label>Interval:</label><input type="number" class="interval"/><br/>
+    <label>Timestamp:</label><input type="number" class="timeStamp"/><br/>
     <h3>acceleration</h3>
     <div id="acceleration">
       <label>X:</label><input type="text" class="x" style="text-align:right"/><br/>
@@ -25,12 +25,12 @@
   <h2>device orienation</h2>
   <div id="deviceorientation">
     <label>Absolute:</label><input type="text" class="absolute" /><br/>
-    <label>Timestamp:</label><input type="text" class="timeStamp"/><br/>
+    <label>Timestamp:</label><input type="number" class="timeStamp"/><br/>
     <h3>rotation rate</h3>
     <div id="rotationRate">
-      <label>ALPHA:</label><input type="text" class="alpha"/><br/>
-      <label>BETA:</label><input type="text" class="beta"/><br/>
-      <label>GAMMA:</label><input type="text" class="gamma"/><br/>
+      <label>ALPHA:</label><input type="number" class="alpha"/><br/>
+      <label>BETA:</label><input type="number" class="beta"/><br/>
+      <label>GAMMA:</label><input type="number" class="gamma"/><br/>
     </div>
   </div>
   <div id="compassneedcalibration">
@@ -49,15 +49,15 @@ function log(line) {
 
 async function onDeviceMotion(event) {
   document.querySelector('#devicemotion > .interval' ).value  = event.interval.toFixed(6);
-  document.querySelector('#devicemotion > .timeStamp').value = event.timeStamp;
+  document.querySelector('#devicemotion > .timeStamp').value = event.timeStamp.toFixed(3);
 
   document.querySelector('#acceleration > .x').value = event.acceleration.x.toFixed(3);
   document.querySelector('#acceleration > .y').value = event.acceleration.y.toFixed(3);
   document.querySelector('#acceleration > .z').value = event.acceleration.z.toFixed(3);
 
-  document.querySelector('#accelerationIncludingGravity > .x').value = event.accelerationIncludingGravity.x;
-  document.querySelector('#accelerationIncludingGravity > .y').value = event.accelerationIncludingGravity.y;
-  document.querySelector('#accelerationIncludingGravity > .z').value = event.accelerationIncludingGravity.z;
+  document.querySelector('#accelerationIncludingGravity > .x').value = event.accelerationIncludingGravity.x.toFixed(3);
+  document.querySelector('#accelerationIncludingGravity > .y').value = event.accelerationIncludingGravity.y.toFixed(3);
+  document.querySelector('#accelerationIncludingGravity > .z').value = event.accelerationIncludingGravity.z.toFixed(3);
 
   document.querySelector('#window > .orientation').value = window.orientation;
 
@@ -66,11 +66,11 @@ async function onDeviceMotion(event) {
 
 async function onDeviceOrientation(event) {
   document.querySelector('#deviceorientation > .absolute' ).value  = event.absolute;
-  document.querySelector('#deviceorientation > .timeStamp').value = event.timeStamp;
+  document.querySelector('#deviceorientation > .timeStamp').value = event.timeStampi.toFixed(3);
 
-  document.querySelector('#rotationRate > .alpha').value = event.alpha;
-  document.querySelector('#rotationRate > .beta' ).value  = event.beta;
-  document.querySelector('#rotationRate > .gamma').value = event.gamma;
+  document.querySelector('#rotationRate > .alpha').value = event.alpha.toFixed(3);
+  document.querySelector('#rotationRate > .beta' ).value  = event.beta.toFixed(3);
+  document.querySelector('#rotationRate > .gamma').value = event.gamma.toFixed(3);
 }
 
 async function onCompassNeedCalibration(event) {
