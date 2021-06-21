@@ -11,15 +11,15 @@
     <label>Timestamp:</label><input type="text" class="timeStamp"/><br/>
     <h3>acceleration</h3>
     <div id="acceleration">
-      <label>X:</label><input type="text" class="x"/><br/>
-      <label>Y:</label><input type="text" class="y"/><br/>
-      <label>Z:</label><input type="text" class="z"/><br/>
+      <label>X:</label><input type="text" class="x" style="text-align:right"/><br/>
+      <label>Y:</label><input type="text" class="y" style="text-align:right"/><br/>
+      <label>Z:</label><input type="text" class="z" style="text-align:right"/><br/>
     </div>
     <h3>acceleration including gravity</h3>
     <div id="accelerationIncludingGravity">
-      <label>X:</label><input type="text" class="x"/><br/>
-      <label>Y:</label><input type="text" class="y"/><br/>
-      <label>Z:</label><input type="text" class="z"/><br/>
+      <label>X:</label><input type="number" class="x"/><br/>
+      <label>Y:</label><input type="number" class="y"/><br/>
+      <label>Z:</label><input type="number" class="z"/><br/>
   </div>
   </div>
   <h2>device orienation</h2>
@@ -48,12 +48,12 @@ function log(line) {
 }
 
 async function onDeviceMotion(event) {
-  document.querySelector('#devicemotion > .interval' ).value  = event.interval;
+  document.querySelector('#devicemotion > .interval' ).value  = event.interval.toFixed(6);
   document.querySelector('#devicemotion > .timeStamp').value = event.timeStamp;
 
-  document.querySelector('#acceleration > .x').value = event.acceleration.x;
-  document.querySelector('#acceleration > .y').value = event.acceleration.y;
-  document.querySelector('#acceleration > .z').value = event.acceleration.z;
+  document.querySelector('#acceleration > .x').value = event.acceleration.x.toFixed(3);
+  document.querySelector('#acceleration > .y').value = event.acceleration.y.toFixed(3);
+  document.querySelector('#acceleration > .z').value = event.acceleration.z.toFixed(3);
 
   document.querySelector('#accelerationIncludingGravity > .x').value = event.accelerationIncludingGravity.x;
   document.querySelector('#accelerationIncludingGravity > .y').value = event.accelerationIncludingGravity.y;
