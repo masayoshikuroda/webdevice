@@ -12,11 +12,11 @@
     <table>
       <tr>
         <td>Interval:</td>
-        <td><input type="number" class="interval" value="0.000" style="text-align:right"/></td>
+        <td><input type="number" class="interval" style="text-align:right"/></td>
       </tr>
       <tr>
         <td>Timestamp:</td>
-        <td><input type="number" class="timeStamp" value="0" style="text-align:right"/></td>
+        <td><input type="number" class="timeStamp" style="text-align:right"/></td>
       </tr>
     </table>
     <h3>acceleration</h3>
@@ -24,15 +24,15 @@
       <table>
         <tr>
           <td>X:</td>
-          <td><input type="number" class="ax" value="0.000" style="text-align:right"/></td>
+          <td><input type="number" id="ax" style="text-align:right"/></td>
         </tr>
         <tr>
           <td>Y:</td>
-          <td><input type="number" class="ay" value="0.000" style="text-align:right"/></td>
+          <td><input type="number" id="ay" style="text-align:right"/></td>
         </tr>
         <tr>
           <td>Z:</td>
-          <td><input type="number" class="az" value="0.000" style="text-align:right"/></td>
+          <td><input type="number" id="az" style="text-align:right"/></td>
         </table>
     </div>
     <h3>acceleration including gravity</h3>
@@ -40,15 +40,15 @@
       <table>
         <tr>
           <td>X:</td>
-          <td><input type="number" id="aigx" value="0.000" style="text-align:right"/></td>
+          <td><input type="number" id="aigx" style="text-align:right"/></td>
         </tr>
         <tr>
           <td>Y:</td>
-          <td><input type="number" id="aigy" value="0.000" style="text-align:right"/></td>
+          <td><input type="number" id="aigy" style="text-align:right"/></td>
         </tr>
         <tr>
           <td>Z:</td>
-          <td><input type="number" id="aigz" value="0.000" style="text-align:right"/></td>
+          <td><input type="number" id="aigz" style="text-align:right"/></td>
         </tr>
       </table>
     </div>
@@ -62,7 +62,7 @@
       </tr>
       <tr>
         <td>Timestamp:</td>
-        <td><input type="number" class="timeStamp" value="0" style="text-align:right"/></td>
+        <td><input type="number" class="timeStamp" style="text-align:right"/></td>
       </tr>
     </table>
     <h3>rotation rate</h3>
@@ -70,14 +70,14 @@
       <table>
         <tr>
           <td>ALPHA:</td>
-          <td><input type="number" id="alpha" value="0.000" style="text-align:right"/></td>
+          <td><input type="number" id="alpha" style="text-align:right"/></td>
         <tr>
           <td>BETA:</td>
-          <td><input type="number" id="beta"  value="0.000" style="text-align:right"/></td>
+          <td><input type="number" id="beta" style="text-align:right"/></td>
         </tr>
         <tr>
           <td>GAMMA:</td>
-          <td><input type="number" id="gamma" value="0.000" style="text-align:right"/></td>
+          <td><input type="number" id="gamma" style="text-align:right"/></td>
         </tr>
       </table>
     </div>
@@ -99,8 +99,8 @@ function log(line) {
 }
 
 async function onDeviceMotion(event) {
-  document.querySelector('#devicemotion > .interval' ).value  = event.interval.toFixed(6);
-  document.querySelector('#devicemotion > .timeStamp').value = event.timeStamp.toFixed(3);
+  document.querySelector('#devicemotion .interval' ).value  = event.interval.toFixed(6);
+  document.querySelector('#devicemotion .timeStamp').value = event.timeStamp.toFixed(3);
 
   document.querySelector('#ax').value = event.acceleration.x.toFixed(3);
   document.querySelector('#ay').value = event.acceleration.y.toFixed(3);
@@ -116,8 +116,8 @@ async function onDeviceMotion(event) {
 }
 
 async function onDeviceOrientation(event) {
-  document.querySelector('#deviceorientation > .absolute' ).value = event.absolute;
-  document.querySelector('#deviceorientation > .timeStamp').value = event.timeStampi.toFixed(3);
+  document.querySelector('#deviceorientation .absolute' ).value = event.absolute;
+  document.querySelector('#deviceorientation .timeStamp').value = event.timeStamp.toFixed(3);
 
   document.querySelector('#alpha').value = event.alpha.toFixed(3);
   document.querySelector('#beta' ).value = event.beta.toFixed(3);
@@ -125,10 +125,14 @@ async function onDeviceOrientation(event) {
 }
 
 async function onCompassNeedCalibration(event) {
-  document.querySelector('#compassneedcalibration > need').value = 'true';
+  document.querySelector('#compassneedcalibration .need').value = 'true';
 }
 
 async function onButtonClick() {
+  onDeviceMotion({"interval":0, "timeStamp":0, "acceleration":{"x":0, "y":0, "z":0}, "accelerationIncludingGravity":{"x":0, "y":0, "z":0}});
+  onDeviceOrientation({"absolute":"absolute", "timeStamp":0, "alpha":0, "beta":0, "gamma":0});
+  onCompassNeedCalibration({});
+
   try {
     if (DeviceMotionEvent.requestPermission) {
       const state = await DeviceMotionEvent.requestPermission();
