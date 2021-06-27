@@ -34,6 +34,7 @@
           <td>Z:</td>
           <td><input type="number" id="az" style="text-align:right"/></td>
         </table>
+        <canvas id="accelerationChart"></chart>
     </div>
     <h3>acceleration including gravity</h3>
     <div id="accelerationIncludingGravity">
@@ -51,6 +52,7 @@
           <td><input type="number" id="aigz" style="text-align:right"/></td>
         </tr>
       </table>
+      <canvas id="accelerationIncludingGravityChart"></chart>
     </div>
   </div>
   <h2>device orienation</h2>
@@ -80,6 +82,7 @@
           <td><input type="number" id="gamma" style="text-align:right"/></td>
         </tr>
       </table>
+      <canvas id="rotationRateChart"></chart>
     </div>
   </div>
   <h2>compass need calibration</h2>
@@ -91,7 +94,37 @@
   <pre id="log"></pre>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.3.2"></script>
+<script src="https://cdn.jsdelivr.net/npm/luxon@1.27.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.0.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@2.0.0"></script>
+
 <script>
+
+const aConfig = {
+  type: 'line',
+  data: { datasets: [ {data:[]}, {data:[]}, {data:[]} ] },
+  options: {
+    responsive: false,
+    maintainAspectRatio: false,
+    duration: 5000,
+    pause: true,
+    scales: {
+      x: {
+        type: 'realtime',
+        realtime: {
+          duration : 5000,
+          delay : 2000,
+          pause : true
+        }
+      }
+    }
+  }
+};
+
+const aCtx = document.getElementById('accelerationChart').getContext('2d');
+aCtx.canvas.height = 250;
+const aChart = new Chart(aCtx, aConfig);
 
 function log(line) {
   document.querySelector('#log').textContent += line + '\n';
@@ -111,6 +144,11 @@ async function onDeviceMotion(event) {
   document.querySelector('#aigz').value = event.accelerationIncludingGravity.z.toFixed(3);
 
   document.querySelector('#window > .orientation').value = window.orientation;
+
+  aChart.data.datasets[0].data.push({x:Date.now(), y:event.acceleration.x});
+  aChart.data.datasets[1].data.push({x:Date.now(), y:event.acceleration.y});
+  aChart.data.datasets[2].data.push({x:Date.now(), y:event.acceleration.z});
+  aChart.update();
 
   console.log(event);
 }
@@ -140,6 +178,7 @@ async function onButtonClick() {
         window.addEventListener("devicemotion", onDeviceMotion);
         window.addEventListener("deviceorientation", onDeviceOrientation);
         window.addEventListener("compassneedscalibration", onCompassNeedCalibration);
+        aConfig.options.scales.x.realtime.pause = false;
       } else {
         alert('not permitted!');
       }
