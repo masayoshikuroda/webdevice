@@ -1,5 +1,6 @@
 <h1>Device Web API Test</h1>
 <button type="button" onclick="onButtonClick()">requestPermission</button>
+<button type="button" onclick="onEmulationClick()">Emulation</button>
 <h3>Output</h3>
 <div id="output" class="output">
   <h2>window</h2>
@@ -101,30 +102,64 @@
 
 <script>
 
+Chart.defaults.set('plugins.streaming', {
+  duration: 2000,
+  frameRate: 5,
+  pause: true
+});
+Chart.defaults.animation = false;
+Chart.defaults.responsive = false;
+Chart.defaults.maintaionAspectRatio = false;
+Chart.defaults.plugins.legend.position = 'charArea';
+//Chart.defaults.scales.x.type = 'realtime';
+
 const aConfig = {
   type: 'line',
-  data: { datasets: [ {data:[]}, {data:[]}, {data:[]} ] },
+  data: { datasets: [ 
+    {label:'x', borderColor:'rgb(255,0,0)', data:[]}, 
+    {label:'y', borderColor:'rgb(0,255,0)', data:[]}, 
+    {label:'z', borderColor:'rgb(0,0,255)', data:[]} 
+  ]},
   options: {
-    responsive: false,
-    maintainAspectRatio: false,
-    duration: 5000,
-    pause: true,
-    scales: {
-      x: {
-        type: 'realtime',
-        realtime: {
-          duration : 5000,
-          delay : 2000,
-          pause : true
-        }
-      }
-    }
+    scales: { x: { type: 'realtime' } }
   }
 };
-
 const aCtx = document.getElementById('accelerationChart').getContext('2d');
-aCtx.canvas.height = 250;
 const aChart = new Chart(aCtx, aConfig);
+
+const gConfig = {
+  type: 'line',
+  data: { datasets: [
+    {label:'x', borderColor:'rgb(255,0,0)', data:[]},
+    {label:'y', borderColor:'rgb(0,255,0)', data:[]},
+    {label:'z', borderColor:'rgb(0,0,255)', data:[]}
+  ]},
+  options: {
+    scales: { x: { type: 'realtime' } }
+  }
+};
+const gCtx = document.getElementById('accelerationIncludingGravityChart').getContext('2d');
+const gChart = new Chart(gCtx, gConfig);
+
+const rConfig = {
+  type: 'line',
+  data: { datasets: [
+    {label:'alpha', borderColor:'rgb(255,0,0)', data:[]},
+    {label:'beta',  borderColor:'rgb(0,255,0)', data:[]},
+    {label:'gamma', borderColor:'rgb(0,0,255)', data:[]}
+  ]},
+  options: {
+    scales: { x: { type: 'realtime' } }
+  }
+};
+const rCtx = document.getElementById('rotationRateChart').getContext('2d');
+const rChart = new Chart(rCtx, rConfig);
+
+document.addEventListener("load", function() {
+  aCtx.canvas.width = document.get.ElementById('acceleration').width();
+  aCtx.canvas.height = 250;
+
+});
 
 function log(line) {
   document.querySelector('#log').textContent += line + '\n';
@@ -150,7 +185,10 @@ async function onDeviceMotion(event) {
   aChart.data.datasets[2].data.push({x:Date.now(), y:event.acceleration.z});
   aChart.update();
 
-  console.log(event);
+  gChart.data.datasets[0].data.push({x:Date.now(), y:event.accelerationIncludingGravity.x});
+  gChart.data.datasets[1].data.push({x:Date.now(), y:event.accelerationIncludingGravity.y});
+  gChart.data.datasets[2].data.push({x:Date.now(), y:event.accelerationIncludingGravity.z});
+  gChart.update();
 }
 
 async function onDeviceOrientation(event) {
@@ -160,6 +198,11 @@ async function onDeviceOrientation(event) {
   document.querySelector('#alpha').value = event.alpha.toFixed(3);
   document.querySelector('#beta' ).value = event.beta.toFixed(3);
   document.querySelector('#gamma').value = event.gamma.toFixed(3);
+
+  rChart.data.datasets[0].data.push({x:Date.now(), y:event.alpha});
+  rChart.data.datasets[1].data.push({x:Date.now(), y:event.beta});
+  rChart.data.datasets[2].data.push({x:Date.now(), y:event.gamma});
+  rChart.update();
 }
 
 async function onCompassNeedCalibration(event) {
@@ -187,6 +230,26 @@ async function onButtonClick() {
     log('Argh! ' + error);
     log(error.stack);
   }
+}
+
+let interval = 10;
+
+async function emu() {
+  onDeviceMotion({
+    "interval":interval/1000, 
+    "timeStamp":0, 
+    "acceleration":{"x":Math.random(), "y":Math.random(), "z":Math.random()}, 
+    "accelerationIncludingGravity":{"x":Math.random(), "y":Math.random(), "z":Math.random()}
+  });
+  onDeviceOrientation({"absolute":"absolute", "timeStamp":0, "alpha":Math.random(), "beta":Math.random(), "gamma":Math.random()});
+  onCompassNeedCalibration({});
+}
+
+async function onEmulationClick() {
+  aConfig.options.scales.x.realtime.pause = false;
+  gConfig.options.scales.x.realtime.pause = false;
+  rConfig.options.scales.x.realtime.pause = false;
+  setInterval(emu, interval);
 }
 
 </script>
