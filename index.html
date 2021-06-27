@@ -222,6 +222,8 @@ async function onButtonClick() {
         window.addEventListener("deviceorientation", onDeviceOrientation);
         window.addEventListener("compassneedscalibration", onCompassNeedCalibration);
         aConfig.options.scales.x.realtime.pause = false;
+        gConfig.options.scales.x.realtime.pause = false;
+        rConfig.options.scales.x.realtime.pause = false;
       } else {
         alert('not permitted!');
       }
