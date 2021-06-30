@@ -3,9 +3,9 @@
 <input type="text" id="server" value="wss://test.mosquitto.org:8081"/><br/>
 <label>MQTT Topic</label>
 <input type="text" id="topic" value="webdevice/dev1"/><br/>
-<button type="button" id="btnConnect"    onclick="onConnectClick()">Connect</button>
-<button type="button" id="btnDisconnect" onclick="onDisconnectClick()">Disconnect</button>
-<button type="button" id="btnSubscribe"  onclick="onSubscribeClick()">Subscribe</button>
+<button type="button" id="btnConnect"    onclick="onConnectClick()"    >Connect</button>
+<button type="button" id="btnDisconnect" onclick="onDisconnectClick()" disabled>Disconnect</button>
+<button type="button" id="btnSubscribe"  onclick="onSubscribeClick()"  disabled>Subscribe</button>
 <br/>
 <button type="button" onclick="onRequestClick()">requestPermission</button>
 <button type="button" onclick="onEmulationClick()">Emulation</button>
@@ -120,6 +120,9 @@ async function onConnectClick() {
   
   client.on('connect', function () {
     console.log('connected!');
+    document.getElementById("btnConnect").disabled = true;
+    document.getElementById("btnDisconnect").disabled = false;
+    document.getElementById("btnSubscribe").disabled = false;
   })
 
   const topic = document.getElementById("topic").value;
@@ -132,13 +135,17 @@ async function onDisconnectClick() {
   if(client) {
     client.end();
     client = undefined;
+    console.log('disconnected!');
+    document.getElementById("btnConnect").disabled = false;
+    document.getElementById("btnDisconnect").disabled = true;
+    document.getElementById("btnSubscribe").disabled = true;
   }
 }
 
 async function onSubscribeClick() {
   const topic = document.getElementById("topic").value;
   client.subscribe(topic);
-
+  console.log('subscribed!');
   client.on('message', function (topic, message) {
     console.log(message.toString())
   })
