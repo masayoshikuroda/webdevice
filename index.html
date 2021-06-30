@@ -1,5 +1,13 @@
 <h1>Device Web API Test</h1>
-<button type="button" onclick="onButtonClick()">requestPermission</button>
+<label>MQTT Server</label>
+<input type="text" id="server" value="wss://test.mosquitto.org:8081"/><br/>
+<label>MQTT Topic</label>
+<input type="text" id="topic" value="webdevice/dev1"/><br/>
+<button type="button" id="btnConnect"    onclick="onConnectClick()">Connect</button>
+<button type="button" id="btnDisconnect" onclick="onDisconnectClick()">Disconnect</button>
+<button type="button" id="btnSubscribe"  onclick="onSubscribeClick()">Subscribe</button>
+<br/>
+<button type="button" onclick="onRequestClick()">requestPermission</button>
 <button type="button" onclick="onEmulationClick()">Emulation</button>
 <h3>Output</h3>
 <div id="output" class="output">
@@ -95,12 +103,46 @@
   <pre id="log"></pre>
 </div>
 
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.3.2"></script>
 <script src="https://cdn.jsdelivr.net/npm/luxon@1.27.0"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.0.0"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@2.0.0"></script>
 
 <script>
+
+var client = undefined;
+
+async function onConnectClick() {
+  const server = document.getElementById("server").value;
+  client = mqtt.connect(server);
+  
+  client.on('connect', function () {
+    console.log('connected!');
+  })
+
+  const topic = document.getElementById("topic").value;
+  client.on('message', function (topic, message) {
+    console.log(message.toString())
+  })
+}
+
+async function onDisconnectClick() {
+  if(client) {
+    client.end();
+    client = undefined;
+  }
+}
+
+async function onSubscribeClick() {
+  const topic = document.getElementById("topic").value;
+  client.subscribe(topic);
+
+  client.on('message', function (topic, message) {
+    console.log(message.toString())
+  })
+}
 
 Chart.defaults.set('plugins.streaming', {
   duration: 2000,
@@ -189,6 +231,12 @@ async function onDeviceMotion(event) {
   gChart.data.datasets[1].data.push({x:Date.now(), y:event.accelerationIncludingGravity.y});
   gChart.data.datasets[2].data.push({x:Date.now(), y:event.accelerationIncludingGravity.z});
   gChart.update();
+
+  if (client) {
+    const topic = document.getElementById("topic").value;
+    const metric = { "ax": event.acceleration.x, "ay" : event.acceleration.y, "az" : event.acceleration.z};
+    client.publish(topic, JSON.stringify(metric));
+  }
 }
 
 async function onDeviceOrientation(event) {
@@ -209,7 +257,7 @@ async function onCompassNeedCalibration(event) {
   document.querySelector('#compassneedcalibration .need').value = 'true';
 }
 
-async function onButtonClick() {
+async function onRequestClick() {
   onDeviceMotion({"interval":0, "timeStamp":0, "acceleration":{"x":0, "y":0, "z":0}, "accelerationIncludingGravity":{"x":0, "y":0, "z":0}});
   onDeviceOrientation({"absolute":"absolute", "timeStamp":0, "alpha":0, "beta":0, "gamma":0});
   onCompassNeedCalibration({});
@@ -236,7 +284,7 @@ async function onButtonClick() {
 
 let interval = 10;
 
-async function emu() {
+async function onEmulationCallback() {
   onDeviceMotion({
     "interval":interval/1000, 
     "timeStamp":0, 
@@ -251,7 +299,7 @@ async function onEmulationClick() {
   aConfig.options.scales.x.realtime.pause = false;
   gConfig.options.scales.x.realtime.pause = false;
   rConfig.options.scales.x.realtime.pause = false;
-  setInterval(emu, interval);
+  setInterval(onEmulationCallback, interval);
 }
 
 </script>
