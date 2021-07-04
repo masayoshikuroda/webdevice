@@ -1,7 +1,7 @@
 <h1>Device Web API Test</h1>
 MQTT Server: <input type="text" id="server" size="24" value="wss://test.mosquitto.org:8081"/><br/>
 MQTT Topic : <input type="text" id="topic"  size="24" value="webdevice/dev1"/><br/>
-<button type="button" id="btnConnect"    onclick="onConnectClick()"    >Connect</button>
+<button type="button" id="btnConnect"    onclick="onConnectClick()"            >Connect</button>
 <button type="button" id="btnDisconnect" onclick="onDisconnectClick()" disabled>Disconnect</button>
 <button type="button" id="btnSubscribe"  onclick="onSubscribeClick()"  disabled>Subscribe</button>
 <br/>
@@ -95,8 +95,8 @@ async function onSubscribeClick() {
 }
 
 Chart.defaults.set('plugins.streaming', {
-  duration: 2000,
-  frameRate: 5,
+  duration: 1000,
+  frameRate: 1,
   pause: true
 });
 Chart.defaults.animation = false;
