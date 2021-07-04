@@ -20,13 +20,13 @@ Timestamp:<input type="number" id="dm_timeStamp" style="text-align:right"/><br/>
 X:<input type="number" id="ax" style="width:80px;text-align:right"/>
 Y:<input type="number" id="ay" style="width:80px;text-align:right"/>
 Z:<input type="number" id="az" style="width:80px;text-align:right"/>
-<canvas id="accelerationChart"></canvas>
+<canvas id="accelerationChart" style="position: relative; height:150; width:640"></canvas>
 
 <h3>acceleration including gravity</h3>
 X:<input type="number" id="aigx" style="width:80px;text-align:right"/>
 Y:<input type="number" id="aigy" style="width:80px;text-align:right"/>
 Z:<input type="number" id="aigz" style="width:80px;text-align:right"/>
-<canvas id="accelerationIncludingGravityChart"></canvas>
+<canvas id="accelerationIncludingGravityChart" style="position: relative; height:150; width:640"></canvas>
 
 <h2>device orienation</h2>
 Absolute :<input type="text"   id="do_absolute" /><br/>
@@ -36,7 +36,7 @@ Timestamp:<input type="number" id="do_timeStamp" style="text-align:right"/></td>
 α:<input type="number" id="alpha" style="width:80px;text-align:right"/>
 β:<input type="number" id="beta"  style="width:80px;text-align:right"/>
 γ:<input type="number" id="gamma" style="width:80px;text-align:right"/>
-<canvas id="rotationRateChart"></canvas>
+<canvas id="rotationRateChart"  style="position: relative; height:150; width:640"></canvas>
 
 <h2>compass need calibration</h2>
 Need Calibration: <input type="text" id="need_cal"/><br/>
@@ -95,8 +95,9 @@ async function onSubscribeClick() {
 }
 
 Chart.defaults.set('plugins.streaming', {
-  duration: 1000,
-  frameRate: 1,
+  duration: 5000,
+  ttl: 1000,
+  frameRate: 5,
   pause: true
 });
 Chart.defaults.animation = false;
@@ -147,12 +148,13 @@ const rConfig = {
 const rCtx = document.getElementById('rotationRateChart').getContext('2d');
 const rChart = new Chart(rCtx, rConfig);
 
+/*
 document.addEventListener("load", function() {
   aCtx.canvas.width = document.get.ElementById('acceleration').width();
   aCtx.canvas.height = 250;
 
 });
-
+*/
 function log(line) {
   document.querySelector('#log').textContent += line + '\n';
   console.log(line);
