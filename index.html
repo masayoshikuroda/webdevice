@@ -1,104 +1,47 @@
 <h1>Device Web API Test</h1>
-<label>MQTT Server</label>
-<input type="text" id="server" value="wss://test.mosquitto.org:8081"/><br/>
-<label>MQTT Topic</label>
-<input type="text" id="topic" value="webdevice/dev1"/><br/>
+MQTT Server: <input type="text" id="server" size="24" value="wss://test.mosquitto.org:8081"/><br/>
+MQTT Topic : <input type="text" id="topic"  size="24" value="webdevice/dev1"/><br/>
 <button type="button" id="btnConnect"    onclick="onConnectClick()"    >Connect</button>
 <button type="button" id="btnDisconnect" onclick="onDisconnectClick()" disabled>Disconnect</button>
 <button type="button" id="btnSubscribe"  onclick="onSubscribeClick()"  disabled>Subscribe</button>
 <br/>
 <button type="button" onclick="onRequestClick()">requestPermission</button>
 <button type="button" onclick="onEmulationClick()">Emulation</button>
-<h3>Output</h3>
-<div id="output" class="output">
-  <h2>window</h2>
-  <div id="window">
-    <label>Orientation:</label>
-    <input type="text" class="orientation"/>
-  </div>
-  <h2>device motion</h2>
-  <div id="devicemotion">
-    <table>
-      <tr>
-        <td>Interval:</td>
-        <td><input type="number" class="interval" style="text-align:right"/></td>
-      </tr>
-      <tr>
-        <td>Timestamp:</td>
-        <td><input type="number" class="timeStamp" style="text-align:right"/></td>
-      </tr>
-    </table>
-    <h3>acceleration</h3>
-    <div id="acceleration">
-      <table>
-        <tr>
-          <td>X:</td>
-          <td><input type="number" id="ax" style="text-align:right"/></td>
-        </tr>
-        <tr>
-          <td>Y:</td>
-          <td><input type="number" id="ay" style="text-align:right"/></td>
-        </tr>
-        <tr>
-          <td>Z:</td>
-          <td><input type="number" id="az" style="text-align:right"/></td>
-        </table>
-        <canvas id="accelerationChart"></chart>
-    </div>
-    <h3>acceleration including gravity</h3>
-    <div id="accelerationIncludingGravity">
-      <table>
-        <tr>
-          <td>X:</td>
-          <td><input type="number" id="aigx" style="text-align:right"/></td>
-        </tr>
-        <tr>
-          <td>Y:</td>
-          <td><input type="number" id="aigy" style="text-align:right"/></td>
-        </tr>
-        <tr>
-          <td>Z:</td>
-          <td><input type="number" id="aigz" style="text-align:right"/></td>
-        </tr>
-      </table>
-      <canvas id="accelerationIncludingGravityChart"></chart>
-    </div>
-  </div>
-  <h2>device orienation</h2>
-  <div id="deviceorientation">
-    <table>
-      <tr>
-        <td>Absolute:</td>
-        <td><input type="text" class="absolute" /></td>
-      </tr>
-      <tr>
-        <td>Timestamp:</td>
-        <td><input type="number" class="timeStamp" style="text-align:right"/></td>
-      </tr>
-    </table>
-    <h3>rotation rate</h3>
-    <div id="rotationRate">
-      <table>
-        <tr>
-          <td>ALPHA:</td>
-          <td><input type="number" id="alpha" style="text-align:right"/></td>
-        <tr>
-          <td>BETA:</td>
-          <td><input type="number" id="beta" style="text-align:right"/></td>
-        </tr>
-        <tr>
-          <td>GAMMA:</td>
-          <td><input type="number" id="gamma" style="text-align:right"/></td>
-        </tr>
-      </table>
-      <canvas id="rotationRateChart"></chart>
-    </div>
-  </div>
-  <h2>compass need calibration</h2>
-  <div id="compassneedcalibration">
-    <label>Need Calibration:</label>
-    <input type="text" class="need"/><br/>
-  </div>
+
+<h2>window</h2>
+<label>Orientation:</label>
+<input type="text" id="window_orientation"/>
+<br/>
+<h2>device motion</h2>
+Interval :<input type="number" id="dm_interval"  style="text-align:right"/><br/>
+Timestamp:<input type="number" id="dm_timeStamp" style="text-align:right"/><br/>
+
+<h3>acceleration</h3>
+X:<input type="number" id="ax" style="width:80px;text-align:right"/>
+Y:<input type="number" id="ay" style="width:80px;text-align:right"/>
+Z:<input type="number" id="az" style="width:80px;text-align:right"/>
+<canvas id="accelerationChart"></canvas>
+
+<h3>acceleration including gravity</h3>
+X:<input type="number" id="aigx" style="width:80px;text-align:right"/>
+Y:<input type="number" id="aigy" style="width:80px;text-align:right"/>
+Z:<input type="number" id="aigz" style="width:80px;text-align:right"/>
+<canvas id="accelerationIncludingGravityChart"></canvas>
+
+<h2>device orienation</h2>
+Absolute :<input type="text"   id="do_absolute" /><br/>
+Timestamp:<input type="number" id="do_timeStamp" style="text-align:right"/></td>
+
+<h3>rotation rate</h3>
+α:<input type="number" id="alpha" style="width:80px;text-align:right"/>
+β:<input type="number" id="beta"  style="width:80px;text-align:right"/>
+γ:<input type="number" id="gamma" style="width:80px;text-align:right"/>
+<canvas id="rotationRateChart"></canvas>
+
+<h2>compass need calibration</h2>
+Need Calibration: <input type="text" id="need_cal"/><br/>
+
+<div>
   <div id="status"></div>
   <pre id="log"></pre>
 </div>
@@ -216,8 +159,8 @@ function log(line) {
 }
 
 async function onDeviceMotion(event) {
-  document.querySelector('#devicemotion .interval' ).value  = event.interval.toFixed(6);
-  document.querySelector('#devicemotion .timeStamp').value = event.timeStamp.toFixed(3);
+  document.querySelector('#dm_interval' ).value = event.interval.toFixed(6);
+  document.querySelector('#dm_timeStamp').value = event.timeStamp.toFixed(3);
 
   document.querySelector('#ax').value = event.acceleration.x.toFixed(3);
   document.querySelector('#ay').value = event.acceleration.y.toFixed(3);
@@ -227,7 +170,7 @@ async function onDeviceMotion(event) {
   document.querySelector('#aigy').value = event.accelerationIncludingGravity.y.toFixed(3);
   document.querySelector('#aigz').value = event.accelerationIncludingGravity.z.toFixed(3);
 
-  document.querySelector('#window > .orientation').value = window.orientation;
+  document.querySelector('#window_orientation').value = window.orientation;
 
   aChart.data.datasets[0].data.push({x:Date.now(), y:event.acceleration.x});
   aChart.data.datasets[1].data.push({x:Date.now(), y:event.acceleration.y});
@@ -247,8 +190,8 @@ async function onDeviceMotion(event) {
 }
 
 async function onDeviceOrientation(event) {
-  document.querySelector('#deviceorientation .absolute' ).value = event.absolute;
-  document.querySelector('#deviceorientation .timeStamp').value = event.timeStamp.toFixed(3);
+  document.querySelector('#do_absolute' ).value = event.absolute;
+  document.querySelector('#do_timeStamp').value = event.timeStamp.toFixed(3);
 
   document.querySelector('#alpha').value = event.alpha.toFixed(3);
   document.querySelector('#beta' ).value = event.beta.toFixed(3);
@@ -261,7 +204,7 @@ async function onDeviceOrientation(event) {
 }
 
 async function onCompassNeedCalibration(event) {
-  document.querySelector('#compassneedcalibration .need').value = 'true';
+  document.querySelector('#need_cal').value = 'true';
 }
 
 async function onRequestClick() {
