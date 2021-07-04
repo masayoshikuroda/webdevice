@@ -96,7 +96,8 @@ async function onSubscribeClick() {
 
 Chart.defaults.set('plugins.streaming', {
   duration: 5000,
-  ttl: 1000,
+  ttl: 5200,
+  delay: 200,
   frameRate: 5,
   pause: true
 });
