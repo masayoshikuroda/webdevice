@@ -1,12 +1,13 @@
 <h1>Device Web API Test</h1>
 MQTT Server: <input type="text" id="server" size="24" value="wss://test.mosquitto.org:8081"/><br/>
 MQTT Topic : <input type="text" id="topic"  size="24" value="webdevice/dev1"/><br/>
-<button type="button" id="btnConnect"    onclick="onConnectClick()"            >Connect</button>
-<button type="button" id="btnDisconnect" onclick="onDisconnectClick()" disabled>Disconnect</button>
-<button type="button" id="btnSubscribe"  onclick="onSubscribeClick()"  disabled>Subscribe</button>
+<button type="button" id="btnConnect"    onclick="btnConnectClick()"            >Connect</button>
+<button type="button" id="btnDisconnect" onclick="btnDisconnectClick()" disabled>Disconnect</button>
+<button type="button" id="btnSubscribe"  onclick="btnSubscribeClick()"  disabled>Subscribe</button>
 <br/>
-<button type="button" onclick="onRequestClick()">requestPermission</button>
-<button type="button" onclick="onEmulationClick()">Emulation</button>
+<button type="button" id="btnRequest"        onclick="onRequestClick()">requestPermission</button>
+<button type="button" id="btnStartEmulation" onclick="btnStartEmulationClick()">Start Emulation</button>
+<button type="button" id="btnStopEmulation"  onclick="btnStopEmulationClick()" disabled>Stop Emulation</button>
 
 <h2>window</h2>
 <label>Orientation:</label>
@@ -57,7 +58,7 @@ Need Calibration: <input type="text" id="need_cal"/><br/>
 
 var client = undefined;
 
-async function onConnectClick() {
+async function btnConnectClick() {
   const server = document.getElementById("server").value;
   client = mqtt.connect(server);
   
@@ -74,7 +75,7 @@ async function onConnectClick() {
   })
 }
 
-async function onDisconnectClick() {
+async function btnDisconnectClick() {
   if(client) {
     client.end();
     client = undefined;
@@ -85,7 +86,7 @@ async function onDisconnectClick() {
   }
 }
 
-async function onSubscribeClick() {
+async function btnSubscribeClick() {
   const topic = document.getElementById("topic").value;
   client.subscribe(topic);
   console.log('subscribed!');
@@ -235,6 +236,7 @@ async function onRequestClick() {
   }
 }
 
+var timer = undefined;
 let interval = 10;
 
 async function onEmulationCallback() {
@@ -248,11 +250,27 @@ async function onEmulationCallback() {
   onCompassNeedCalibration({});
 }
 
-async function onEmulationClick() {
+async function btnStartEmulationClick() {
   aConfig.options.scales.x.realtime.pause = false;
   gConfig.options.scales.x.realtime.pause = false;
   rConfig.options.scales.x.realtime.pause = false;
-  setInterval(onEmulationCallback, interval);
+  timer = setInterval(onEmulationCallback, interval);
+  console.log('emulation started!');
+  document.getElementById("btnStartEmulation").disabled = true;
+  document.getElementById("btnStopEmulation").disabled = false;
+}
+
+async function btnStopEmulationClick() {
+  if (timer) {
+    aConfig.options.scales.x.realtime.pause = true;
+    gConfig.options.scales.x.realtime.pause = true;
+    rConfig.options.scales.x.realtime.pause = true;
+    clearInterval(timer);
+    timer = undefined;
+    console.log('emulation stopped!');
+    document.getElementById("btnStartEmulation").disabled = false;
+    document.getElementById("btnStopEmulation").disabled = true;
+  }
 }
 
 </script>
