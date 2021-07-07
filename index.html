@@ -112,7 +112,39 @@ async function btnMqttUnsubscribeClick() {
     document.getElementById("btnMqttSubscribe").disabled = false;
     document.getElementById("btnMqttUnsubscribe").disabled = true;
   });
- }
+}
+
+
+ async function btnDeviceStartClick() {
+  try {
+    if (DeviceMotionEvent.requestPermission) {
+      const state = await DeviceMotionEvent.requestPermission();
+      if (state === 'granted') {
+        window.addEventListener("devicemotion", onDeviceMotion);
+        window.addEventListener("deviceorientation", onDeviceOrientation);
+        window.addEventListener("compassneedscalibration", onCompassNeedCalibration);
+        document.getElementById("btnDeviceStart").disabled = true;
+        document.getElementById("btnDeviceStop").disabled = false;
+        aConfig.options.scales.x.realtime.pause = false;
+        gConfig.options.scales.x.realtime.pause = false;
+        rConfig.options.scales.x.realtime.pause = false;
+      } else {
+        alert('not permitted!');
+      }
+    } 
+  } catch (error) {
+    log('Argh! ' + error);
+    log(error.stack);
+  }
+}
+
+async function btnDeviceStopClicik() {
+  window.removeListener("devicemotion", onDeviceMotion);
+  window.removeListener("deviceorientation", onDeviceOrientation);
+  window.removeListener("compassneedscalibration", onCompassNeedCalibration);
+  document.getElementById("btnDeviceStart").disabled = false;
+  document.getElementById("btnDeviceStop").disabled = true;
+}
 
 async function btnEmulationStartClick() {
   aConfig.options.scales.x.realtime.pause = false;
@@ -278,37 +310,6 @@ async function onDeviceOrientation(event) {
 
 async function onCompassNeedCalibration(event) {
   document.querySelector('#need_cal').value = 'true';
-}
-
-async function onDeviceStartClick() {
-  try {
-    if (DeviceMotionEvent.requestPermission) {
-      const state = await DeviceMotionEvent.requestPermission();
-      if (state === 'granted') {
-        window.addEventListener("devicemotion", onDeviceMotion);
-        window.addEventListener("deviceorientation", onDeviceOrientation);
-        window.addEventListener("compassneedscalibration", onCompassNeedCalibration);
-        document.getElementById("btnDeviceStart").disabled = true;
-        document.getElementById("btnDeviceStop").disabled = false;
-        aConfig.options.scales.x.realtime.pause = false;
-        gConfig.options.scales.x.realtime.pause = false;
-        rConfig.options.scales.x.realtime.pause = false;
-      } else {
-        alert('not permitted!');
-      }
-    } 
-  } catch (error) {
-    log('Argh! ' + error);
-    log(error.stack);
-  }
-}
-
-async function onDeviceStartClick() {
-  window.removeListener("devicemotion", onDeviceMotion);
-  window.removeListener("deviceorientation", onDeviceOrientation);
-  window.removeListener("compassneedscalibration", onCompassNeedCalibration);
-  document.getElementById("btnDeviceStart").disabled = false;
-  document.getElementById("btnDeviceStop").disabled = true;
 }
 
 var timer = undefined;
