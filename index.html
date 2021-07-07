@@ -1,13 +1,16 @@
 <h1>Device Web API Test</h1>
 MQTT Server: <input type="text" id="server" size="24" value="wss://test.mosquitto.org:8081"/><br/>
 MQTT Topic : <input type="text" id="topic"  size="24" value="webdevice/dev1"/><br/>
-<button type="button" id="btnConnect"    onclick="btnConnectClick()"            >Connect</button>
-<button type="button" id="btnDisconnect" onclick="btnDisconnectClick()" disabled>Disconnect</button>
-<button type="button" id="btnSubscribe"  onclick="btnSubscribeClick()"  disabled>Subscribe</button>
+<button type="button" id="btnMqttConnect"     onclick="btnMqttConnectClick()"              >Connect</button>
+<button type="button" id="btnMqttDisconnect"  onclick="btnMqttDisconnectClick()"   disabled>Disconnect</button>
+<button type="button" id="btnMqttSubscribe"   onclick="btnMqttSubscribeClick()"    disabled>Subscribe</button>
+<button type="button" id="btnMqttUnsubscribe" onclick="btnMqttUnsubscribeClick()"  disabled>Unsubscribe</button>
 <br/>
-<button type="button" id="btnRequest"        onclick="onRequestClick()">requestPermission</button>
-<button type="button" id="btnStartEmulation" onclick="btnStartEmulationClick()">Start Emulation</button>
-<button type="button" id="btnStopEmulation"  onclick="btnStopEmulationClick()" disabled>Stop Emulation</button>
+<button type="button" id="btnDeviceStart"    onclick="btnDeviceStartClick()"            >Start Device</button>
+<button type="button" id="btnDeviceStop"     onclick="btnDeviceStopClicik()"    disabled>Stop Device</button>
+<br/>
+<button type="button" id="btnEmulationStart" onclick="btnEmulationStartClick()"        >Start Emulation</button>
+<button type="button" id="btnEmulationStop"  onclick="btnEmulationStopClick()" disabled>Stop Emulation</button>
 
 <h2>window</h2>
 <label>Orientation:</label>
@@ -58,41 +61,80 @@ Need Calibration: <input type="text" id="need_cal"/><br/>
 
 var client = undefined;
 
-async function btnConnectClick() {
+async function btnMqttConnectClick() {
   const server = document.getElementById("server").value;
   client = mqtt.connect(server);
   
-  client.on('connect', function () {
+  client.on('connect', function (connack) {
     console.log('connected!');
-    document.getElementById("btnConnect").disabled = true;
-    document.getElementById("btnDisconnect").disabled = false;
-    document.getElementById("btnSubscribe").disabled = false;
-  })
-
-  const topic = document.getElementById("topic").value;
-  client.on('message', function (topic, message) {
-    console.log(message.toString())
-  })
+    document.getElementById("btnMqttConnect").disabled = true;
+    document.getElementById("btnMqttDisconnect").disabled = false;
+    document.getElementById("btnMqttSubscribe").disabled = false;
+  });
 }
 
-async function btnDisconnectClick() {
+async function btnMqttDisconnectClick() {
   if(client) {
     client.end();
-    client = undefined;
-    console.log('disconnected!');
-    document.getElementById("btnConnect").disabled = false;
-    document.getElementById("btnDisconnect").disabled = true;
-    document.getElementById("btnSubscribe").disabled = true;
+
+    client.on('close', function() {
+      client = undefined;
+      console.log('disconnected!');
+      document.getElementById("btnMqttConnect").disabled = false;
+      document.getElementById("btnMqttDisconnect").disabled = true;
+      document.getElementById("btnMqttSubscribe").disabled = true;
+    });
   }
 }
 
-async function btnSubscribeClick() {
+async function btnMqttSubscribeClick() {
   const topic = document.getElementById("topic").value;
-  client.subscribe(topic);
-  console.log('subscribed!');
-  client.on('message', function (topic, message) {
-    console.log(message.toString())
-  })
+  client.subscribe(topic, function (err, granted) {
+    console.log('subscribed!');
+    document.getElementById("btnMqttSubscribe").disabled = true;
+    document.getElementById("btnMqttUnsubscribe").disabled = false;
+
+    client.on('message', onMessageCallback);
+  });
+}
+
+function onMessageCallback(topic, message) {
+  const metric = JSON.parse(message);
+  drawDeviceMotion(metric.interval, metric.timeStamp, 
+    metric.ax, metric.ay, metric.az,
+    metric.aigx, metric.aigy, metric.aigz);
+}
+
+async function btnMqttUnsubscribeClick() {
+  const topic = document.getElementById("topic").value;
+  client.unsubscribe(topic, function (err) {
+    console.log('unsubscribed!'); 
+    document.getElementById("btnMqttSubscribe").disabled = false;
+    document.getElementById("btnMqttUnsubscribe").disabled = true;
+  });
+ }
+
+async function btnEmulationStartClick() {
+  aConfig.options.scales.x.realtime.pause = false;
+  gConfig.options.scales.x.realtime.pause = false;
+  rConfig.options.scales.x.realtime.pause = false;
+  timer = setInterval(onEmulationCallback, interval);
+  console.log('emulation started!');
+  document.getElementById("btnEmulationStart").disabled = true;
+  document.getElementById("btnEmulationStop").disabled = false;
+}
+
+async function btnEmulationStopClick() {
+  if (timer) {
+    aConfig.options.scales.x.realtime.pause = true;
+    gConfig.options.scales.x.realtime.pause = true;
+    rConfig.options.scales.x.realtime.pause = true;
+    clearInterval(timer);
+    timer = undefined;
+    console.log('emulation stopped!');
+    document.getElementById("btnEmulationStart").disabled = false;
+    document.getElementById("btnEmulationStop").disabled = true;
+  }
 }
 
 Chart.defaults.set('plugins.streaming', {
@@ -150,72 +192,95 @@ const rConfig = {
 const rCtx = document.getElementById('rotationRateChart').getContext('2d');
 const rChart = new Chart(rCtx, rConfig);
 
-/*
-document.addEventListener("load", function() {
-  aCtx.canvas.width = document.get.ElementById('acceleration').width();
-  aCtx.canvas.height = 250;
-
-});
-*/
 function log(line) {
   document.querySelector('#log').textContent += line + '\n';
   console.log(line);
 }
 
-async function onDeviceMotion(event) {
-  document.querySelector('#dm_interval' ).value = event.interval.toFixed(6);
-  document.querySelector('#dm_timeStamp').value = event.timeStamp.toFixed(3);
+async function drawDeviceMotion(interval, timeStamp, ax, ay, az, aigx, aigy, aigz) {
+  document.querySelector('#dm_interval' ).value = interval.toFixed(6);
+  document.querySelector('#dm_timeStamp').value = timeStamp.toFixed(3);
 
-  document.querySelector('#ax').value = event.acceleration.x.toFixed(3);
-  document.querySelector('#ay').value = event.acceleration.y.toFixed(3);
-  document.querySelector('#az').value = event.acceleration.z.toFixed(3);
+  document.querySelector('#ax').value = ax.toFixed(3);
+  document.querySelector('#ay').value = ay.toFixed(3);
+  document.querySelector('#az').value = az.toFixed(3);
 
-  document.querySelector('#aigx').value = event.accelerationIncludingGravity.x.toFixed(3);
-  document.querySelector('#aigy').value = event.accelerationIncludingGravity.y.toFixed(3);
-  document.querySelector('#aigz').value = event.accelerationIncludingGravity.z.toFixed(3);
+  document.querySelector('#aigx').value = aigx.toFixed(3);
+  document.querySelector('#aigy').value = aigy.toFixed(3);
+  document.querySelector('#aigz').value = aigz.toFixed(3);
 
   document.querySelector('#window_orientation').value = window.orientation;
 
-  aChart.data.datasets[0].data.push({x:Date.now(), y:event.acceleration.x});
-  aChart.data.datasets[1].data.push({x:Date.now(), y:event.acceleration.y});
-  aChart.data.datasets[2].data.push({x:Date.now(), y:event.acceleration.z});
+  aChart.data.datasets[0].data.push({x:Date.now(), y:ax});
+  aChart.data.datasets[1].data.push({x:Date.now(), y:ay});
+  aChart.data.datasets[2].data.push({x:Date.now(), y:az});
   aChart.update();
 
-  gChart.data.datasets[0].data.push({x:Date.now(), y:event.accelerationIncludingGravity.x});
-  gChart.data.datasets[1].data.push({x:Date.now(), y:event.accelerationIncludingGravity.y});
-  gChart.data.datasets[2].data.push({x:Date.now(), y:event.accelerationIncludingGravity.z});
+  gChart.data.datasets[0].data.push({x:Date.now(), y:aigx});
+  gChart.data.datasets[1].data.push({x:Date.now(), y:aigy});
+  gChart.data.datasets[2].data.push({x:Date.now(), y:aigz});
   gChart.update();
+} 
 
+async function onDeviceMotion(event) {
   if (client) {
     const topic = document.getElementById("topic").value;
-    const metric = { "ax": event.acceleration.x, "ay" : event.acceleration.y, "az" : event.acceleration.z};
+    const metric = {
+      "interval": event.interval,
+      "timeStamp": event.timeStamp,
+      "ax": event.acceleration.x, 
+      "ay" : event.acceleration.y, 
+      "az" : event.acceleration.z,
+      "aigx": event.accelerationIncludingGravity.x, 
+      "aigy" : event.accelerationIncludingGravity.y, 
+      "aigz" : event.accelerationIncludingGravity.z
+    };
     client.publish(topic, JSON.stringify(metric));
+  } else {
+    drawDeviceMotion(
+    event.interval,
+    event.timeStamp,
+    event.acceleration.x, event.acceleration.y, event.acceleration.z,
+    event.accelerationIncludingGravity.x,
+    event.accelerationIncludingGravity.y,
+    event.accelerationIncludingGravity.z
+  );
   }
 }
 
-async function onDeviceOrientation(event) {
-  document.querySelector('#do_absolute' ).value = event.absolute;
-  document.querySelector('#do_timeStamp').value = event.timeStamp.toFixed(3);
+async function drawDeviceOrientation(absolute, timeStamp, alpha, beta, gamma) {
+  document.querySelector('#do_absolute' ).value = absolute;
+  document.querySelector('#do_timeStamp').value = timeStamp.toFixed(3);
 
-  document.querySelector('#alpha').value = event.alpha.toFixed(3);
-  document.querySelector('#beta' ).value = event.beta.toFixed(3);
-  document.querySelector('#gamma').value = event.gamma.toFixed(3);
+  document.querySelector('#alpha').value = alpha.toFixed(3);
+  document.querySelector('#beta' ).value = beta.toFixed(3);
+  document.querySelector('#gamma').value = gamma.toFixed(3);
 
-  rChart.data.datasets[0].data.push({x:Date.now(), y:event.alpha});
-  rChart.data.datasets[1].data.push({x:Date.now(), y:event.beta});
-  rChart.data.datasets[2].data.push({x:Date.now(), y:event.gamma});
+  rChart.data.datasets[0].data.push({x:Date.now(), y:alpha});
+  rChart.data.datasets[1].data.push({x:Date.now(), y:beta});
+  rChart.data.datasets[2].data.push({x:Date.now(), y:gamma});
   rChart.update();
+}
+
+async function onDeviceOrientation(event) {
+  if (client) {
+
+  } else {
+    drawDeviceOrientation(
+      event.absolute,
+      event.timeStamp,
+      event.alpha,
+      event.beta,
+      event.gamma
+    );
+  }
 }
 
 async function onCompassNeedCalibration(event) {
   document.querySelector('#need_cal').value = 'true';
 }
 
-async function onRequestClick() {
-  onDeviceMotion({"interval":0, "timeStamp":0, "acceleration":{"x":0, "y":0, "z":0}, "accelerationIncludingGravity":{"x":0, "y":0, "z":0}});
-  onDeviceOrientation({"absolute":"absolute", "timeStamp":0, "alpha":0, "beta":0, "gamma":0});
-  onCompassNeedCalibration({});
-
+async function onDeviceStartClick() {
   try {
     if (DeviceMotionEvent.requestPermission) {
       const state = await DeviceMotionEvent.requestPermission();
@@ -223,6 +288,8 @@ async function onRequestClick() {
         window.addEventListener("devicemotion", onDeviceMotion);
         window.addEventListener("deviceorientation", onDeviceOrientation);
         window.addEventListener("compassneedscalibration", onCompassNeedCalibration);
+        document.getElementById("btnDeviceStart").disabled = true;
+        document.getElementById("btnDeviceStop").disabled = false;
         aConfig.options.scales.x.realtime.pause = false;
         gConfig.options.scales.x.realtime.pause = false;
         rConfig.options.scales.x.realtime.pause = false;
@@ -234,6 +301,14 @@ async function onRequestClick() {
     log('Argh! ' + error);
     log(error.stack);
   }
+}
+
+async function onDeviceStartClick() {
+  window.removeListener("devicemotion", onDeviceMotion);
+  window.removeListener("deviceorientation", onDeviceOrientation);
+  window.removeListener("compassneedscalibration", onCompassNeedCalibration);
+  document.getElementById("btnDeviceStart").disabled = false;
+  document.getElementById("btnDeviceStop").disabled = true;
 }
 
 var timer = undefined;
@@ -250,27 +325,5 @@ async function onEmulationCallback() {
   onCompassNeedCalibration({});
 }
 
-async function btnStartEmulationClick() {
-  aConfig.options.scales.x.realtime.pause = false;
-  gConfig.options.scales.x.realtime.pause = false;
-  rConfig.options.scales.x.realtime.pause = false;
-  timer = setInterval(onEmulationCallback, interval);
-  console.log('emulation started!');
-  document.getElementById("btnStartEmulation").disabled = true;
-  document.getElementById("btnStopEmulation").disabled = false;
-}
-
-async function btnStopEmulationClick() {
-  if (timer) {
-    aConfig.options.scales.x.realtime.pause = true;
-    gConfig.options.scales.x.realtime.pause = true;
-    rConfig.options.scales.x.realtime.pause = true;
-    clearInterval(timer);
-    timer = undefined;
-    console.log('emulation stopped!');
-    document.getElementById("btnStartEmulation").disabled = false;
-    document.getElementById("btnStopEmulation").disabled = true;
-  }
-}
 
 </script>
