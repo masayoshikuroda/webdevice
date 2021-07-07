@@ -1,6 +1,6 @@
 <h1>Device Web API Test</h1>
 MQTT Server: <input type="text" id="server" size="24" value="wss://test.mosquitto.org:8081"/><br/>
-MQTT Topic : <input type="text" id="topic"  size="24" value="webdevice/dev1"/><br/>
+MQTT Topic : <input type="text" id="topic"  size="24" value="WebDevice1/Device"/><br/>
 <button type="button" id="btnMqttConnect"     onclick="btnMqttConnectClick()"              >Connect</button>
 <button type="button" id="btnMqttDisconnect"  onclick="btnMqttDisconnectClick()"   disabled>Disconnect</button>
 <button type="button" id="btnMqttSubscribe"   onclick="btnMqttSubscribeClick()"    disabled>Subscribe</button>
@@ -89,7 +89,8 @@ async function btnMqttDisconnectClick() {
 
 async function btnMqttSubscribeClick() {
   const topic = document.getElementById("topic").value;
-  client.subscribe(topic, function (err, granted) {
+  const topics = [topic + 'Motion', topic + 'Orientation'];
+  client.subscribe(topics, function (err, granted) {
     console.log('subscribed!');
     document.getElementById("btnMqttSubscribe").disabled = true;
     document.getElementById("btnMqttUnsubscribe").disabled = false;
@@ -100,9 +101,14 @@ async function btnMqttSubscribeClick() {
 
 function onMessageCallback(topic, message) {
   const metric = JSON.parse(message);
-  drawDeviceMotion(metric.interval, metric.timeStamp, 
-    metric.ax, metric.ay, metric.az,
-    metric.aigx, metric.aigy, metric.aigz);
+  if (topic.endsWith('Motion')) {
+    drawDeviceMotion(metric.interval, metric.timeStamp, 
+      metric.ax, metric.ay, metric.az,
+      metric.aigx, metric.aigy, metric.aigz);
+  } else if (topic.endsWith('Orientation')) {
+    drawDeviceOrientation(metric.absolute, metric.timeStamp, 
+      metric.alpha, metric.beta, metric.gamma);
+  }
 }
 
 async function btnMqttUnsubscribeClick() {
@@ -115,27 +121,25 @@ async function btnMqttUnsubscribeClick() {
 }
 
 
- async function btnDeviceStartClick() {
-  try {
-    if (DeviceMotionEvent.requestPermission) {
-      const state = await DeviceMotionEvent.requestPermission();
-      if (state === 'granted') {
-        window.addEventListener("devicemotion", onDeviceMotion);
-        window.addEventListener("deviceorientation", onDeviceOrientation);
-        window.addEventListener("compassneedscalibration", onCompassNeedCalibration);
-        document.getElementById("btnDeviceStart").disabled = true;
-        document.getElementById("btnDeviceStop").disabled = false;
-        aConfig.options.scales.x.realtime.pause = false;
-        gConfig.options.scales.x.realtime.pause = false;
-        rConfig.options.scales.x.realtime.pause = false;
-      } else {
-        alert('not permitted!');
-      }
-    } 
-  } catch (error) {
-    log('Argh! ' + error);
-    log(error.stack);
+async function btnDeviceStartClick() {
+  if (DeviceMotionEvent.requestPermission == undefined) {
+    alert('DeviceMotionEvent not supported!');
+    return;
   }
+
+  const state = await DeviceMotionEvent.requestPermission();
+  if (state != 'granted') {
+    alert('Permission request declined!');
+  }
+  
+  window.addEventListener("devicemotion", onDeviceMotion);
+  window.addEventListener("deviceorientation", onDeviceOrientation);
+  window.addEventListener("compassneedscalibration", onCompassNeedCalibration);
+  document.getElementById("btnDeviceStart").disabled = true;
+  document.getElementById("btnDeviceStop").disabled = false;
+  aConfig.options.scales.x.realtime.pause = false;
+  gConfig.options.scales.x.realtime.pause = false;
+  rConfig.options.scales.x.realtime.pause = false;
 }
 
 async function btnDeviceStopClicik() {
@@ -267,7 +271,7 @@ async function onDeviceMotion(event) {
       "aigy" : event.accelerationIncludingGravity.y, 
       "aigz" : event.accelerationIncludingGravity.z
     };
-    client.publish(topic, JSON.stringify(metric));
+    client.publish(topic + 'Motion', JSON.stringify(metric));
   } else {
     drawDeviceMotion(
     event.interval,
@@ -296,7 +300,15 @@ async function drawDeviceOrientation(absolute, timeStamp, alpha, beta, gamma) {
 
 async function onDeviceOrientation(event) {
   if (client) {
-
+    const topic = document.getElementById("topic").value;
+    const metric = {
+      "absolute": event.absolute,
+      "timeStamp": event.timeStamp,
+      "alpha": event.alpha, 
+      "beta" : event.beta, 
+      "gamma" : event.gamma
+    };
+    client.publish(topic + 'Orientation', JSON.stringify(metric));
   } else {
     drawDeviceOrientation(
       event.absolute,
@@ -322,9 +334,12 @@ async function onEmulationCallback() {
     "acceleration":{"x":Math.random(), "y":Math.random(), "z":Math.random()}, 
     "accelerationIncludingGravity":{"x":Math.random(), "y":Math.random(), "z":Math.random()}
   });
-  onDeviceOrientation({"absolute":"absolute", "timeStamp":0, "alpha":Math.random(), "beta":Math.random(), "gamma":Math.random()});
+  onDeviceOrientation({
+    "absolute":"absolute", 
+    "timeStamp":0, 
+    "alpha":Math.random(), "beta":Math.random(), "gamma":Math.random()
+  });
   onCompassNeedCalibration({});
 }
-
 
 </script>
